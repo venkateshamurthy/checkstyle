@@ -734,7 +734,7 @@ public class ImportOrderCheck
             boolean previous, String name, int line) {
         if (ordered) {
             if (option == ImportOrderOption.INFLOW) {
-                if (isWrongOrder(name, isStatic)) {
+                if (isWrongOrder(name)) {
                     log(line, MSG_ORDERING, name);
                 }
             }
@@ -748,7 +748,7 @@ public class ImportOrderCheck
                         // current and previous static or current and
                         // previous non-static
                         lastImportStatic == isStatic
-                    && isWrongOrder(name, isStatic);
+                    && isWrongOrder(name);
 
                 if (shouldFireError) {
                     log(line, MSG_ORDERING, name);
@@ -760,26 +760,15 @@ public class ImportOrderCheck
     /**
      * Checks whether import name is in wrong order.
      * @param name import name.
-     * @param isStatic whether it is a static import name.
      * @return true if import name is in wrong order.
      */
-    private boolean isWrongOrder(String name, boolean isStatic) {
-        final boolean result;
-        if (isStatic) {
-            if (useContainerOrderingForStatic) {
-                result = compareContainerOrder(lastImport, name, caseSensitive) > 0;
-            }
-            else if (staticImportsApart) {
-                result = sortStaticImportsAlphabetically
-                    && compare(lastImport, name, caseSensitive) > 0;
-            }
-            else {
-                result = compare(lastImport, name, caseSensitive) > 0;
-            }
+    private boolean isWrongOrder(String name) {
+        boolean result = compare(lastImport, name, caseSensitive) > 0;
+        if (useContainerOrderingForStatic) {
+            result = compareContainerOrder(lastImport, name, caseSensitive) > 0;
         }
-        else {
-            // out of lexicographic order
-            result = compare(lastImport, name, caseSensitive) > 0;
+        else if (staticImportsApart) {
+            result = sortStaticImportsAlphabetically && result;
         }
         return result;
     }

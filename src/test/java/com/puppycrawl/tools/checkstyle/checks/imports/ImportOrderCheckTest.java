@@ -39,7 +39,6 @@ import com.puppycrawl.tools.checkstyle.internal.utils.TestUtil;
 import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
 
 public class ImportOrderCheckTest extends AbstractModuleTestSupport {
-
     @Override
     protected String getPackageLocation() {
         return "com/puppycrawl/tools/checkstyle/checks/imports/importorder";
@@ -53,6 +52,17 @@ public class ImportOrderCheckTest extends AbstractModuleTestSupport {
     public void testImportOrderOptionValueOf() {
         final ImportOrderOption option = ImportOrderOption.valueOf("TOP");
         assertEquals(ImportOrderOption.TOP, option, "Invalid valueOf result");
+    }
+
+    @Test
+    public void testWrongSequence() throws Exception {
+        final DefaultConfiguration checkConfig =
+            createModuleConfig(ImportOrderCheck.class);
+        final String[] expected = {
+            "4: " + getCheckMessage(MSG_ORDERING, "java.util.HashMap"),
+        };
+
+        verify(checkConfig, getNonCompilablePath("InputImportOrderWrongSequence.java"), expected);
     }
 
     @Test
